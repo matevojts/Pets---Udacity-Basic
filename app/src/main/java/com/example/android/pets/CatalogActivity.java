@@ -112,7 +112,9 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         String[] projection = {
                 PetEntry._ID,
                 COLUMN_PET_NAME,
-                COLUMN_PET_BREED
+                COLUMN_PET_BREED,
+                COLUMN_PET_GENDER,
+                COLUMN_PET_WEIGHT
         };
 
         return new CursorLoader(this,

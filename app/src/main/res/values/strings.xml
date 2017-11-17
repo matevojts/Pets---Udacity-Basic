@@ -12,6 +12,7 @@
 -->
 <resources>
     <string name="app_name">Pets</string>
+    <string name="a_n">A(n)</string>
     <string name="action_insert_dummy_data">Insert Dummy Data</string>
     <string name="action_delete_all_entries">Delete All Pets</string>
     <string name="editor_activity_title_new_pet">Add a Pet</string>
@@ -25,7 +26,8 @@
     <string name="hint_pet_breed">Breed</string>
     <string name="hint_pet_weight">Weight</string>
     <string name="unit_pet_weight">kg</string>
-    <string name="gender_unknown">Unknown</string>
+    <string name="unknown">Unknown</string>
+    <string name="unknown_gender">Unknown gender</string>
     <string name="gender_male">Male</string>
     <string name="gender_female">Female</string>
     <string name="editor_insert_pet_successful">Pet saved</string>
@@ -47,4 +49,5 @@
     <string name="unknown_breed">Unknown breed</string>
     <string name="dummy_pet_name">Toto</string>
     <string name="dummy_pet_breed">Terrier</string>
+    <string name="kg_s">kg(s)</string>
 </resources>

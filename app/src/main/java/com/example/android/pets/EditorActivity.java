@@ -41,6 +41,8 @@ import android.widget.Toast;
 
 import com.example.android.pets.data.PetContract.PetEntry;
 
+import java.util.Locale;
+
 import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_BREED;
 import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_GENDER;
 import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_NAME;
@@ -283,8 +285,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             String breed = cursor.getString(cursor.getColumnIndex(COLUMN_PET_BREED));
             int gender = cursor.getInt(cursor.getColumnIndex(COLUMN_PET_GENDER));
             int weight = cursor.getInt(cursor.getColumnIndex(COLUMN_PET_WEIGHT));
-            String locale = getBaseContext().getResources().getConfiguration().locale.getDisplayName();
-            String weightFormatted = String.format(locale, "%d", weight);
+            String weightFormatted = String.format(Locale.getDefault(),"%d", weight);
 
             nameEditText.setText(name);
             breedEditText.setText(breed);

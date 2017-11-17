@@ -9,7 +9,12 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import com.example.android.pets.data.PetContract.PetEntry;
+import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_BREED;
+import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_GENDER;
+import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_NAME;
+import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_WEIGHT;
+import static com.example.android.pets.data.PetContract.PetEntry.GENDER_FEMALE;
+import static com.example.android.pets.data.PetContract.PetEntry.GENDER_MALE;
 
 public class PetCursorAdapter extends CursorAdapter {
 
@@ -27,14 +32,40 @@ public class PetCursorAdapter extends CursorAdapter {
 
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
-
-        String breed = cursor.getString(cursor.getColumnIndexOrThrow(PetEntry.COLUMN_PET_BREED));
+        String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PET_NAME));
+        String breed = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PET_BREED));
+        int gender = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PET_GENDER));
+        int weight = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PET_WEIGHT));
 
         if (TextUtils.isEmpty(breed)) {
             breed = context.getString(R.string.unknown_breed);
         }
 
-        nameTextView.setText(cursor.getString(cursor.getColumnIndexOrThrow(PetEntry.COLUMN_PET_NAME)));
-        summaryTextView.setText(breed);
+        String genderToDisplay;
+        switch (gender) {
+            case GENDER_MALE:
+                genderToDisplay = context.getString(R.string.gender_male);
+                break;
+            case GENDER_FEMALE:
+                genderToDisplay = context.getString(R.string.gender_female);
+                break;
+            default:
+                genderToDisplay = context.getString(R.string.unknown_gender);
+        }
+
+        String summary =
+                context.getString(R.string.a_n)
+                + " "
+                + genderToDisplay
+                + " "
+                + breed
+                + " ("
+                + weight
+                + " "
+                + context.getString(R.string.kg_s)
+                +")";
+
+        nameTextView.setText(name);
+        summaryTextView.setText(summary);
     }
 }
