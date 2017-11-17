@@ -12,85 +12,37 @@
 -->
 <resources>
     <string name="app_name">Pets</string>
-
     <string name="action_insert_dummy_data">Insert Dummy Data</string>
-
     <string name="action_delete_all_entries">Delete All Pets</string>
-
     <string name="editor_activity_title_new_pet">Add a Pet</string>
-
     <string name="editor_activity_title_edit_pet">Edit Pet</string>
-
     <string name="action_save">Save</string>
-
     <string name="action_delete">Delete</string>
-
     <string name="category_overview">Overview</string>
-
     <string name="category_gender">Gender</string>
-
     <string name="category_measurement">Measurement</string>
-
     <string name="hint_pet_name">Name</string>
-
     <string name="hint_pet_breed">Breed</string>
-
     <string name="hint_pet_weight">Weight</string>
-
     <string name="unit_pet_weight">kg</string>
-
     <string name="gender_unknown">Unknown</string>
-
     <string name="gender_male">Male</string>
-
     <string name="gender_female">Female</string>
-
-    <!-- Toast message in editor when new pet has been successfully inserted [CHAR LIMIT=NONE] -->
     <string name="editor_insert_pet_successful">Pet saved</string>
-
-    <!-- Toast message in editor when new pet has failed to be inserted [CHAR LIMIT=NONE] -->
     <string name="editor_insert_pet_failed">Error with saving pet</string>
-
-    <!-- Title text for the empty view, which describes the empty dog house image [CHAR LIMIT=50] -->
     <string name="empty_view_title_text">It\'s a bit lonely here...</string>
-
-    <!-- Subtitle text for the empty view that prompts the user to add a pet [CHAR LIMIT=50] -->
     <string name="empty_view_subtitle_text">Get started by adding a pet</string>
-
-    <!-- Toast message in editor when current pet was successfully updated [CHAR LIMIT=NONE] -->
     <string name="editor_update_pet_successful">Pet updated</string>
-
-    <!-- Toast message in editor when current pet has failed to be updated [CHAR LIMIT=NONE] -->
     <string name="editor_update_pet_failed">Error with updating pet</string>
-
-    <!-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
     <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
-
-    <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
     <string name="discard">Discard</string>
-
-    <!-- Dialog button text for the option to keep editing the current pet [CHAR LIMIT=20] -->
     <string name="keep_editing">Keep Editing</string>
-
-    <!-- Toast message in editor when current pet was successfully deleted [CHAR LIMIT=NONE] -->
     <string name="editor_delete_pet_successful">Pet deleted</string>
-
-    <!-- Toast message in editor when current pet has failed to be deleted [CHAR LIMIT=NONE] -->
     <string name="editor_delete_pet_failed">Error with deleting pet</string>
-
-    <!-- Dialog message to ask the user to confirm deleting the current pet [CHAR LIMIT=NONE] -->
     <string name="delete_dialog_msg">Delete this pet?</string>
-
-    <!-- Dialog button text for the option to confirm deleting the current pet [CHAR LIMIT=20] -->
     <string name="delete">Delete</string>
-
-    <!-- Dialog button text for the option to cancel deletion of the current pet [CHAR LIMIT=20] -->
     <string name="cancel">Cancel</string>
-
     <string name="deleted_all_pets_succesful">All pets deleted</string>
-
     <string name="deleted_all_pets_failed">Error with deleting pets</string>
-
     <string name="unknown_breed">Unknown breed</string>
-
 </resources>

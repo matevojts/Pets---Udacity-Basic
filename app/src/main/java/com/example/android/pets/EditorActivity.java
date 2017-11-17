@@ -86,22 +86,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         setupSpinner();
     }
 
-    /**
-     * Setup the dropdown spinner that allows the user to select the gender of the pet.
-     */
     private void setupSpinner() {
-        // Create adapter for spinner. The list options are from the String array it will use
-        // the spinner will use the default layout
         ArrayAdapter genderSpinnerAdapter = ArrayAdapter.createFromResource(this,
                 R.array.array_gender_options, android.R.layout.simple_spinner_item);
 
-        // Specify dropdown layout style - simple list view with 1 item per line
         genderSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 
-        // Apply the adapter to the spinner
         mGenderSpinner.setAdapter(genderSpinnerAdapter);
 
-        // Set the integer mSelected to the constant values
         mGenderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -117,10 +109,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 }
             }
 
-            // Because AdapterView is an abstract class, onNothingSelected must be defined
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mGender = 0; // Unknown
+                mGender = 0;
             }
         });
     }
@@ -135,46 +126,37 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private void showUnsavedChangesDialog(
             DialogInterface.OnClickListener discardButtonClickListener) {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_dialog_msg);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
             }
         });
 
-        // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     @Override
     public void onBackPressed() {
-        // If the pet hasn't changed, continue with handling back button press
+
         if (!mPetHasChanged) {
             super.onBackPressed();
             return;
         }
 
-        // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-        // Create a click listener to handle the user confirming that changes should be discarded.
         DialogInterface.OnClickListener discardButtonClickListener =
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // User clicked "Discard" button, close the current activity.
                         finish();
                     }
                 };
 
-        // Show dialog that there are unsaved changes
         showUnsavedChangesDialog(discardButtonClickListener);
     }
 
@@ -195,8 +177,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         if (!TextUtils.isEmpty(weightToParse)) {
             weight = Integer.parseInt(weightToParse);
         }
-
-
 
         ContentValues values = new ContentValues();
 
@@ -225,8 +205,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, getString(R.string.editor_update_pet_successful),
                         Toast.LENGTH_SHORT).show();
             }
-
-
         }
     }
 
@@ -240,8 +218,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_editor.xml file.
-        // This adds menu items to the app bar.
         getMenuInflater().inflate(R.menu.menu_editor, menu);
         return true;
     }
@@ -249,7 +225,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        // If this is a new pet, hide the "Delete" menu item.
         if (mCurrentPetUri == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
@@ -259,9 +234,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
-            // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 savePet();
                 finish();
@@ -269,28 +242,18 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             case R.id.action_delete:
                 showDeleteConfirmationDialog();
                 return true;
-            // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // If the pet hasn't changed, continue with navigating up to parent activity
-                // which is the {@link CatalogActivity}.
                 if (!mPetHasChanged) {
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
                     return true;
                 }
-
-                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-                // Create a click listener to handle the user confirming that
-                // changes should be discarded.
                 DialogInterface.OnClickListener discardButtonClickListener =
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // User clicked "Discard" button, navigate to parent activity.
                                 NavUtils.navigateUpFromSameTask(EditorActivity.this);
                             }
                         };
-
-                // Show a dialog that notifies the user they have unsaved changes
                 showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
         }
@@ -318,10 +281,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         if (cursor.moveToFirst()) {
 
-            /*int namePosition = cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME);
-
-            String name = cursor.getString(namePosition);*/
-
             String name = cursor.getString(cursor.getColumnIndex(COLUMN_PET_NAME));
             String breed = cursor.getString(cursor.getColumnIndex(COLUMN_PET_BREED));
             int gender = cursor.getInt(cursor.getColumnIndex(COLUMN_PET_GENDER));
@@ -331,9 +290,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             mBreedEditText.setText(breed);
             mWeightEditText.setText(Integer.toString(weight));
 
-            // Gender is a dropdown spinner, so map the constant value from the database
-            // into one of the dropdown options (0 is Unknown, 1 is Male, 2 is Female).
-            // Then call setSelection() so that option is displayed on screen as the current selection.
             switch (gender) {
                 case PetEntry.GENDER_MALE:
                     mGenderSpinner.setSelection(1);
@@ -346,7 +302,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     break;
             }
         }
-
     }
 
     @Override
@@ -360,27 +315,21 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     private void showDeleteConfirmationDialog() {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
                 deletePet();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
             }
         });
 
-        // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
@@ -397,7 +346,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                         Toast.LENGTH_SHORT).show();
             }
         }
-
         finish();
     }
 }
