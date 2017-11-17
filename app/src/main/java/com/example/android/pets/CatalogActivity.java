@@ -20,21 +20,26 @@ import android.widget.Toast;
 
 import com.example.android.pets.data.PetContract.PetEntry;
 
+
+import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_BREED;
+import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_GENDER;
 import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_NAME;
+import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_WEIGHT;
 import static com.example.android.pets.data.PetContract.PetEntry.CONTENT_URI;
+import static com.example.android.pets.data.PetContract.PetEntry.GENDER_MALE;
 
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int PET_LOADER = 0;
-    PetCursorAdapter mCursorAdapter;
+    PetCursorAdapter cursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_catalog);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
@@ -44,8 +49,8 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         ListView petListView = (ListView) findViewById(R.id.list);
         petListView.setEmptyView(findViewById(R.id.empty_view));
-        mCursorAdapter = new PetCursorAdapter(this, null);
-        petListView.setAdapter(mCursorAdapter);
+        cursorAdapter = new PetCursorAdapter(this, null);
+        petListView.setAdapter(cursorAdapter);
 
         petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -60,15 +65,15 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         getLoaderManager().initLoader(PET_LOADER, null, this);
     }
 
-    private void insertPet() {
-
+    private void insertDummyPet() {
         ContentValues values = new ContentValues();
-        values.put(COLUMN_PET_NAME, "Toto");
-        values.put(PetEntry.COLUMN_PET_BREED, "Terrier");
-        values.put(PetEntry.COLUMN_PET_GENDER, PetEntry.GENDER_MALE);
-        values.put(PetEntry.COLUMN_PET_WEIGHT, 7);
 
-        Uri newUri = getContentResolver().insert(CONTENT_URI, values);
+        values.put(COLUMN_PET_NAME, getString(R.string.dummy_pet_name));
+        values.put(COLUMN_PET_BREED, getString(R.string.dummy_pet_breed));
+        values.put(COLUMN_PET_GENDER, GENDER_MALE);
+        values.put(COLUMN_PET_WEIGHT, 7);
+
+        getContentResolver().insert(CONTENT_URI, values);
     }
 
     @Override
@@ -81,7 +86,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_insert_dummy_data:
-                insertPet();
+                insertDummyPet();
                 return true;
             case R.id.action_delete_all_entries:
                 deleteAllPets();
@@ -107,19 +112,24 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         String[] projection = {
                 PetEntry._ID,
                 COLUMN_PET_NAME,
-                PetEntry.COLUMN_PET_BREED
+                COLUMN_PET_BREED
         };
 
-        return new CursorLoader(this, PetEntry.CONTENT_URI, projection, null, null, null);
+        return new CursorLoader(this,
+                PetEntry.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mCursorAdapter.swapCursor(data);
+        cursorAdapter.swapCursor(data);
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        mCursorAdapter.swapCursor(null);
+        cursorAdapter.swapCursor(null);
     }
 }

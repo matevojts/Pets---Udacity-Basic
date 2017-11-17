@@ -18,6 +18,7 @@ package com.example.android.pets;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -44,18 +45,20 @@ import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_BREE
 import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_GENDER;
 import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_NAME;
 import static com.example.android.pets.data.PetContract.PetEntry.COLUMN_PET_WEIGHT;
+import static com.example.android.pets.data.PetContract.PetEntry.GENDER_FEMALE;
+import static com.example.android.pets.data.PetContract.PetEntry.GENDER_MALE;
 import static com.example.android.pets.data.PetContract.PetEntry.GENDER_UNKNOWN;
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int EXISTING_PET_LOADER = 0;
-    private Uri mCurrentPetUri;
-    private EditText mNameEditText;
-    private EditText mBreedEditText;
-    private EditText mWeightEditText;
-    private Spinner mGenderSpinner;
-    private int mGender = 0;
-    private boolean mPetHasChanged = false;
+    private Uri currentPetUri;
+    private EditText nameEditText;
+    private EditText breedEditText;
+    private EditText weightEditText;
+    private Spinner genderSpinner;
+    private int gender = 0;
+    private boolean isPetChanged = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +66,9 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         setContentView(R.layout.activity_editor);
 
         Intent intent = getIntent();
-        mCurrentPetUri = intent.getData();
+        currentPetUri = intent.getData();
 
-        if (mCurrentPetUri == null) {
+        if (currentPetUri == null) {
             setTitle(R.string.editor_activity_title_new_pet);
             invalidateOptionsMenu();
         } else {
@@ -73,15 +76,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             getLoaderManager().initLoader(EXISTING_PET_LOADER, null, this);
         }
 
-        mNameEditText = (EditText) findViewById(R.id.edit_pet_name);
-        mBreedEditText = (EditText) findViewById(R.id.edit_pet_breed);
-        mWeightEditText = (EditText) findViewById(R.id.edit_pet_weight);
-        mGenderSpinner = (Spinner) findViewById(R.id.spinner_gender);
+        nameEditText = (EditText) findViewById(R.id.edit_pet_name);
+        breedEditText = (EditText) findViewById(R.id.edit_pet_breed);
+        weightEditText = (EditText) findViewById(R.id.edit_pet_weight);
+        genderSpinner = (Spinner) findViewById(R.id.spinner_gender);
 
-        mNameEditText.setOnTouchListener(mTouchListener);
-        mBreedEditText.setOnTouchListener(mTouchListener);
-        mWeightEditText.setOnTouchListener(mTouchListener);
-        mGenderSpinner.setOnTouchListener(mTouchListener);
+        nameEditText.setOnTouchListener(touchListener);
+        breedEditText.setOnTouchListener(touchListener);
+        weightEditText.setOnTouchListener(touchListener);
+        genderSpinner.setOnTouchListener(touchListener);
 
         setupSpinner();
     }
@@ -92,34 +95,36 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         genderSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
 
-        mGenderSpinner.setAdapter(genderSpinnerAdapter);
+        genderSpinner.setAdapter(genderSpinnerAdapter);
 
-        mGenderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        genderSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
                 String selection = (String) parent.getItemAtPosition(position);
+
                 if (!TextUtils.isEmpty(selection)) {
                     if (selection.equals(getString(R.string.gender_male))) {
-                        mGender = PetEntry.GENDER_MALE;
+                        gender = GENDER_MALE;
                     } else  if (selection.equals(getString(R.string.gender_female))) {
-                            mGender = PetEntry.GENDER_FEMALE;
-                        } else {
-                            mGender = GENDER_UNKNOWN;
-                        }
+                            gender = GENDER_FEMALE;
+                            } else {
+                                gender = GENDER_UNKNOWN;
+                            }
                 }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                mGender = 0;
+                gender = 0;
             }
         });
     }
 
-    private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
+    private View.OnTouchListener touchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            mPetHasChanged = true;
+            isPetChanged = true;
             return false;
         }
     };
@@ -144,7 +149,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onBackPressed() {
 
-        if (!mPetHasChanged) {
+        if (!isPetChanged) {
             super.onBackPressed();
             return;
         }
@@ -162,14 +167,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private void savePet() {
 
-        String name = mNameEditText.getText().toString().trim();
-        String breed = mBreedEditText.getText().toString().trim();
-        String weightToParse = mWeightEditText.getText().toString().trim();
+        String name = nameEditText.getText().toString().trim();
+        String breed = breedEditText.getText().toString().trim();
+        String weightToParse = weightEditText.getText().toString().trim();
 
         if (TextUtils.isEmpty(name) &&
                 TextUtils.isEmpty(breed) &&
                 TextUtils.isEmpty(weightToParse) &&
-                mGender == GENDER_UNKNOWN) {
+                gender == GENDER_UNKNOWN) {
             return;
         }
 
@@ -182,37 +187,25 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         values.put(COLUMN_PET_NAME, name);
         values.put(COLUMN_PET_BREED, breed);
-        values.put(COLUMN_PET_GENDER, mGender);
+        values.put(COLUMN_PET_GENDER, gender);
         values.put(COLUMN_PET_WEIGHT, weight);
 
-        if (mCurrentPetUri == null) {
+        if (currentPetUri == null) {
             Uri newUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
 
             if (newUri == null) {
-                Toast.makeText(this, getString(R.string.editor_insert_pet_failed),
-                        Toast.LENGTH_SHORT).show();
+                notifyUserDatabaseOperation(this, R.string.editor_insert_pet_failed);
             } else {
-                Toast.makeText(this, getString(R.string.editor_insert_pet_successful),
-                        Toast.LENGTH_SHORT).show();
+                notifyUserDatabaseOperation(this, R.string.editor_insert_pet_successful);
             }
         } else {
-            int rowsAffected = getContentResolver().update(mCurrentPetUri, values, null, null);
+            int rowsAffected = getContentResolver().update(currentPetUri, values, null, null);
 
             if (rowsAffected == 0) {
-                Toast.makeText(this, getString(R.string.editor_update_pet_failed),
-                        Toast.LENGTH_SHORT).show();
+                notifyUserDatabaseOperation(this, R.string.editor_update_pet_failed);
             } else {
-                Toast.makeText(this, getString(R.string.editor_update_pet_successful),
-                        Toast.LENGTH_SHORT).show();
+                notifyUserDatabaseOperation(this, R.string.editor_update_pet_successful);
             }
-        }
-    }
-
-    private String savePetToastMessage(Uri uri) {
-        if (uri == null) {
-            return getString(R.string.editor_insert_pet_failed);
-        } else {
-            return getString(R.string.editor_insert_pet_successful);
         }
     }
 
@@ -225,7 +218,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        if (mCurrentPetUri == null) {
+        if (currentPetUri == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
         }
@@ -243,7 +236,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 showDeleteConfirmationDialog();
                 return true;
             case android.R.id.home:
-                if (!mPetHasChanged) {
+                if (!isPetChanged) {
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
                     return true;
                 }
@@ -269,7 +262,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 COLUMN_PET_GENDER,
                 COLUMN_PET_WEIGHT
         };
-        return new CursorLoader(this, mCurrentPetUri, projection, null, null, null);
+        return new CursorLoader(this,
+                currentPetUri,
+                projection,
+                null,
+                null,
+                null);
     }
 
     @Override
@@ -285,20 +283,22 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             String breed = cursor.getString(cursor.getColumnIndex(COLUMN_PET_BREED));
             int gender = cursor.getInt(cursor.getColumnIndex(COLUMN_PET_GENDER));
             int weight = cursor.getInt(cursor.getColumnIndex(COLUMN_PET_WEIGHT));
+            String locale = getBaseContext().getResources().getConfiguration().locale.getDisplayName();
+            String weightFormatted = String.format(locale, "%d", weight);
 
-            mNameEditText.setText(name);
-            mBreedEditText.setText(breed);
-            mWeightEditText.setText(Integer.toString(weight));
+            nameEditText.setText(name);
+            breedEditText.setText(breed);
+            weightEditText.setText(weightFormatted);
 
             switch (gender) {
-                case PetEntry.GENDER_MALE:
-                    mGenderSpinner.setSelection(1);
+                case GENDER_MALE:
+                    genderSpinner.setSelection(1);
                     break;
-                case PetEntry.GENDER_FEMALE:
-                    mGenderSpinner.setSelection(2);
+                case GENDER_FEMALE:
+                    genderSpinner.setSelection(2);
                     break;
                 default:
-                    mGenderSpinner.setSelection(0);
+                    genderSpinner.setSelection(0);
                     break;
             }
         }
@@ -306,12 +306,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
-        mNameEditText.setText("");
-        mBreedEditText.setText("");
-        mWeightEditText.setText("");
-        mGenderSpinner.setSelection(0);
-
+        nameEditText.setText("");
+        breedEditText.setText("");
+        weightEditText.setText("");
+        genderSpinner.setSelection(0);
     }
 
     private void showDeleteConfirmationDialog() {
@@ -335,17 +333,20 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     private void deletePet() {
-        if (mCurrentPetUri != null) {
-            int rowsDeleted = getContentResolver().delete(mCurrentPetUri, null, null);
+        if (currentPetUri != null) {
+            int rowsDeleted = getContentResolver().delete(currentPetUri, null, null);
 
             if (rowsDeleted == 0) {
-                Toast.makeText(this, getString(R.string.editor_delete_pet_failed),
-                        Toast.LENGTH_SHORT).show();
+                notifyUserDatabaseOperation(this, R.string.editor_delete_pet_failed);
             } else {
-                Toast.makeText(this, getString(R.string.editor_delete_pet_successful),
-                        Toast.LENGTH_SHORT).show();
+                notifyUserDatabaseOperation(this, R.string.editor_delete_pet_successful);
             }
         }
         finish();
+    }
+
+    public void notifyUserDatabaseOperation (Context context, int stringResourceId) {
+        Toast.makeText(context, getString(stringResourceId),
+                Toast.LENGTH_SHORT).show();
     }
 }
