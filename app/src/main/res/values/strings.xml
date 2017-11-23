@@ -29,7 +29,9 @@
     <string name="unknown">Unknown</string>
     <string name="unknown_gender">Unknown gender</string>
     <string name="gender_male">Male</string>
+    <string name="gender_male_sign">♂</string>
     <string name="gender_female">Female</string>
+    <string name="gender_female_sign">♀</string>
     <string name="editor_insert_pet_successful">Pet saved</string>
     <string name="editor_insert_pet_failed">Error with saving pet</string>
     <string name="empty_view_title_text">It\'s a bit lonely here...</string>

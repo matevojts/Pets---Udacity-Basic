@@ -2,7 +2,9 @@ package com.example.android.pets;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +34,7 @@ public class PetCursorAdapter extends CursorAdapter {
 
         TextView nameTextView = (TextView) view.findViewById(R.id.name);
         TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
+        TextView genderTextView = (TextView) view.findViewById(R.id.gender);
         String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PET_NAME));
         String breed = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PET_BREED));
         int gender = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PET_GENDER));
@@ -41,31 +44,43 @@ public class PetCursorAdapter extends CursorAdapter {
             breed = context.getString(R.string.unknown_breed);
         }
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            genderTextView.setTextAppearance(R.style.NameText);
+        } else {
+            genderTextView.setTextAppearance(context, R.style.NameText);
+        }
+
+        // TODO: remove 2 logs, textsize is small only, does not change to medium, if gender is not unknown
+
+        Log.i("MALEorFEMALE", String.valueOf(genderTextView.getTextSize()));
+
         String genderToDisplay;
         switch (gender) {
             case GENDER_MALE:
-                genderToDisplay = context.getString(R.string.gender_male);
+                genderToDisplay = context.getString(R.string.gender_male_sign);
                 break;
             case GENDER_FEMALE:
-                genderToDisplay = context.getString(R.string.gender_female);
+                genderToDisplay = context.getString(R.string.gender_female_sign);
                 break;
             default:
                 genderToDisplay = context.getString(R.string.unknown_gender);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    genderTextView.setTextAppearance(R.style.SummaryText);
+                } else {
+                    genderTextView.setTextAppearance(context, R.style.SummaryText);
+                }
+                Log.i("defaultGender", String.valueOf(genderTextView.getTextSize()));
         }
 
         String summary =
-                context.getString(R.string.a_n)
-                + " "
-                + genderToDisplay
-                + " "
-                + breed
-                + " ("
+                breed
+                + " - "
                 + weight
                 + " "
-                + context.getString(R.string.kg_s)
-                +")";
+                + context.getString(R.string.kg_s);
 
         nameTextView.setText(name);
         summaryTextView.setText(summary);
+        genderTextView.setText(genderToDisplay);
     }
 }
